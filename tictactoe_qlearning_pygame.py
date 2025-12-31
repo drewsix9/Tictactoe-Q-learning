@@ -489,6 +489,10 @@ def run_game(Q: Dict, mode: str = 'human_vs_ai'):
         # Draw controls
         draw_controls(screen, font_small, game_over, mode)
 
+        # Draw game over pop-up if game ended
+        if game_over:
+            draw_game_over_popup(screen, winner, mode)
+
         pygame.display.flip()
         clock.tick(30)
 
@@ -676,32 +680,6 @@ def draw_debug_panel(screen, state: str, Q: Dict, mode: str,
         screen.blit(no_actions, (panel_x, panel_y))
         panel_y += line_height
 
-    # Divider
-    panel_y += 10
-    pygame.draw.line(screen, PANEL_BORDER, (panel_x, panel_y),
-                     (panel_x + 320, panel_y), 1)
-    panel_y += 15
-
-    # Info section
-    info_font = pygame.font.Font(None, 22)
-
-    # Mode info
-    mode_label = "Human vs AI" if mode == 'human_vs_ai' else mode.replace(
-        '_', ' ').title()
-    mode_text = info_font.render(f"Mode: {mode_label}", True, TEXT_COLOR)
-    screen.blit(mode_text, (panel_x, panel_y))
-    panel_y += line_height
-
-    # Q-table size
-    size_text = info_font.render(f"Q-table size: {len(Q):,}", True, TEXT_COLOR)
-    screen.blit(size_text, (panel_x, panel_y))
-    panel_y += line_height
-
-    # Episodes trained
-    ep_text = info_font.render(
-        f"Episodes trained: ~{episode_count:,}", True, TEXT_COLOR)
-    screen.blit(ep_text, (panel_x, panel_y))
-
 
 def draw_controls(screen, font_small, game_over: bool, mode: str = 'human_vs_ai'):
     """Draw control instructions at the bottom."""
@@ -744,6 +722,75 @@ def draw_controls(screen, font_small, game_over: bool, mode: str = 'human_vs_ai'
         text = font_small.render(line, True, TEXT_COLOR)
         screen.blit(text, (controls_x, controls_y))
         controls_y += 22
+
+
+def draw_game_over_popup(screen, winner: str, mode: str = 'human_vs_ai'):
+    """Draw a game over pop-up overlay showing the winner."""
+    # Semi-transparent overlay
+    overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))  # Black with 180 alpha
+    screen.blit(overlay, (0, 0))
+
+    # Pop-up box
+    popup_width = 500
+    popup_height = 280
+    popup_x = (WINDOW_WIDTH - popup_width) // 2
+    popup_y = (WINDOW_HEIGHT - popup_height) // 2
+
+    popup_rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+    pygame.draw.rect(screen, (255, 255, 255), popup_rect, border_radius=20)
+    pygame.draw.rect(screen, HEADER_COLOR, popup_rect, 5, border_radius=20)
+
+    # Determine message and color based on winner
+    font_title = pygame.font.Font(None, 72)
+    font_subtitle = pygame.font.Font(None, 36)
+    font_instruction = pygame.font.Font(None, 28)
+
+    if winner == 'X':
+        if mode == 'human_vs_ai':
+            title_text = "AI WINS!"
+            subtitle_text = "Player X (AI) is victorious"
+        else:
+            title_text = "PLAYER X WINS!"
+            subtitle_text = "Congratulations!"
+        title_color = X_COLOR
+    elif winner == 'O':
+        if mode == 'human_vs_ai':
+            title_text = "YOU WIN!"
+            subtitle_text = "Player O defeated the AI!"
+        else:
+            title_text = "PLAYER O WINS!"
+            subtitle_text = "Congratulations!"
+        title_color = O_COLOR
+    else:  # draw
+        title_text = "DRAW!"
+        subtitle_text = "It's a tie game"
+        title_color = (127, 140, 141)  # Gray
+
+    # Draw title
+    title_surface = font_title.render(title_text, True, title_color)
+    title_rect = title_surface.get_rect(
+        center=(popup_x + popup_width // 2, popup_y + 70))
+    screen.blit(title_surface, title_rect)
+
+    # Draw subtitle
+    subtitle_surface = font_subtitle.render(subtitle_text, True, TEXT_COLOR)
+    subtitle_rect = subtitle_surface.get_rect(
+        center=(popup_x + popup_width // 2, popup_y + 135))
+    screen.blit(subtitle_surface, subtitle_rect)
+
+    # Draw instructions
+    instruction_surface = font_instruction.render(
+        "Press R to play again", True, (100, 100, 100))
+    instruction_rect = instruction_surface.get_rect(
+        center=(popup_x + popup_width // 2, popup_y + 190))
+    screen.blit(instruction_surface, instruction_rect)
+
+    instruction2_surface = font_instruction.render(
+        "Press ESC for menu", True, (100, 100, 100))
+    instruction2_rect = instruction2_surface.get_rect(
+        center=(popup_x + popup_width // 2, popup_y + 225))
+    screen.blit(instruction2_surface, instruction2_rect)
 
 
 # ============================================================================
