@@ -38,12 +38,6 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Using the batch file (Windows):
-
-```bash
-run.bat
-```
-
 ### Manual run:
 
 ```bash
