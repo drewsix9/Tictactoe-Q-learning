@@ -150,8 +150,6 @@ The visualization updates every 50 episodes, allowing you to see how the agent l
 - [`qtable.json`](qtable.json) - Saved Q-table (auto-generated after training)
 - [`requirements.txt`](requirements.txt) - Python dependencies (pygame-ce)
 - [`venv/`](venv) - Virtual environment (not committed to git)
-- `run.bat` - Quick launch script (Windows)
-- `setup.bat` - One-time setup script (Windows)
 - [`README.md`](README.md) - This file
 
 ## Training Details
